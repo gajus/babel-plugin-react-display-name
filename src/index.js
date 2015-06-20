@@ -18,6 +18,10 @@ export default function ({ Plugin, types: t }) {
   }
   
   return new Plugin("react-display-name", {
+    metadata: {
+      group: "builtin-pre"
+    },
+
     visitor: {
       ExportDefaultDeclaration(node, parent, scope, file) {
         if (react.isCreateClass(node.declaration)) {
