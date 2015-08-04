@@ -1,3 +1,5 @@
+import path from "path";
+
 export default function ({ Plugin, types: t }) {
   function addDisplayName(id, call) {
     var props = call.arguments[0].properties;
@@ -35,7 +37,7 @@ export default function ({ Plugin, types: t }) {
 
     return true;
   }
-  
+
   return new Plugin("react-display-name", {
     metadata: {
       group: "builtin-pre"
@@ -44,10 +46,17 @@ export default function ({ Plugin, types: t }) {
     visitor: {
       ExportDefaultDeclaration(node, parent, scope, file) {
         if (isCreateClass(node.declaration)) {
-          addDisplayName(file.opts.basename, node.declaration);
+          var displayName = file.opts.basename;
+
+          // ./{module name}/index.js
+          if (displayName === "index") {
+            displayName = path.basename(path.dirname(file.opts.filename));
+          }
+
+          addDisplayName(displayName, node.declaration);
         }
       },
-      
+
       "AssignmentExpression|Property|VariableDeclarator"(node) {
         var left, right;
 
